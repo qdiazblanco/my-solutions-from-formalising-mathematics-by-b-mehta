@@ -142,13 +142,21 @@ example : P → Q → P := by
   exact hP
   done
 
-/-- If we know `P`, and we also know `P → Q`, we can deduce `Q`.
+/- If we know `P`, and we also know `P → Q`, we can deduce `Q`.
 This is called "Modus Ponens" by logicians. -/
 example : P → (P → Q) → Q := by
-  sorry
+  intro hP hPQ
+  apply hPQ at hP
+  exact hP
+  done
+/-Alternatives, after intro
+  apply hPQ
+  exact hP
   done
 
-/-- `→` is transitive. That is, if `P → Q` and `Q → R` are true, then
+  exact hPQ hP-/
+
+/- `→` is transitive. That is, if `P → Q` and `Q → R` are true, then
   so is `P → R`. -/
 example : (P → Q) → (Q → R) → P → R := by
   sorry
