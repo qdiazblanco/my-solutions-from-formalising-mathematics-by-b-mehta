@@ -32,12 +32,16 @@ example : P ∧ Q → P := by
   done
 
 example : P ∧ Q → Q := by
-  sorry
-  done
+  intro h
+  cases' h with hP hQ
+  exact hQ
 
 example : (P → Q → R) → P ∧ Q → R := by
-  sorry
-  done
+  intro hPQR hPyQ
+  cases' hPyQ with hP hQ
+  apply hPQR
+  · exact hP
+  · exact hQ
 
 example : P → Q → P ∧ Q := by
   intro hP hQ
@@ -48,22 +52,34 @@ example : P → Q → P ∧ Q := by
 
 /-- `∧` is symmetric -/
 example : P ∧ Q → Q ∧ P := by
-  sorry
-  done
+  intro h
+  cases' h with hP hQ
+  constructor <;> assumption
 
 example : P → P ∧ True := by
-  sorry
-  done
+  intro h
+  constructor
+  exact h
+  trivial
 
 example : False → P ∧ False := by
-  sorry
-  done
+  intro h
+  exfalso
+  exact h
 
 /-- `∧` is transitive -/
 example : P ∧ Q → Q ∧ R → P ∧ R := by
-  sorry
-  done
+  intro hPyQ hQyR
+  constructor
+  · cases' hPyQ with hP hQ
+    exact hP
+  · cases' hQyR with hQ hR
+    exact hR
+
 
 example : (P ∧ Q → R) → P → Q → R := by
-  sorry
-  done
+  intro h1 hP hQ
+  apply h1
+  constructor
+  · exact hP
+  · exact hQ
