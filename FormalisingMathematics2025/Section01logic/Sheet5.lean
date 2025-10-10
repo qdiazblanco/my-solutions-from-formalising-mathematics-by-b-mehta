@@ -25,20 +25,23 @@ and also the following two new tactics:
 variable (P Q R S : Prop)
 
 example : P ↔ P := by
-  sorry
-  done
+  rfl
 
 example : (P ↔ Q) → (Q ↔ P) := by
-  sorry
-  done
+  intro hPQ
+  rw [hPQ]
 
 example : (P ↔ Q) ↔ (Q ↔ P) := by
-  sorry
-  done
+  constructor
+  ·intro hPQ
+   rw [hPQ]
+  ·intro hQP
+   rw [hQP]
 
 example : (P ↔ Q) → (Q ↔ R) → (P ↔ R) := by
-  sorry
-  done
+  intro hPQ hQR
+  rw [hQR] at hPQ
+  exact hPQ
 
 example : P ∧ Q ↔ Q ∧ P := by
   sorry
