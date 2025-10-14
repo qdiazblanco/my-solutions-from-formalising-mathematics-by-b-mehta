@@ -44,25 +44,91 @@ example : (P ↔ Q) → (Q ↔ R) → (P ↔ R) := by
   exact hPQ
 
 example : P ∧ Q ↔ Q ∧ P := by
-  sorry
-  done
+  constructor
+  · intro hPyQ
+    cases' hPyQ with hP hQ
+    constructor
+    · exact hQ
+    · exact hP
+  · intro hQyP
+    cases' hQyP with hQ hP
+    constructor
+    · exact hP
+    · exact hQ
+-- or
+example : P ∧ Q ↔ Q ∧ P := by
+  constructor <;> --uses the next tactics for every goal
+  · intro h
+    cases' h with h1 h2
+    exact ⟨h2,h1⟩ /-means the proof is the pair (h2,h1)
+    it works for a '∧' statement, i don't know about '∨' yet -/
 
 example : (P ∧ Q) ∧ R ↔ P ∧ Q ∧ R := by
-  sorry
-  done
+  constructor
+  · intro h
+    cases' h with hPyQ hR
+    cases' hPyQ with hP hQ
+    exact ⟨hP,hQ,hR⟩
+  · intro hPQR
+    cases' hPQR with hP hQyR
+    cases' hQyR with hQ hR
+    exact ⟨⟨hP,hQ⟩, hR⟩
+    /- instead of 'exact' we could use
+    constructor
+    · exact ⟨hP,hQ⟩
+    · exact hR
+    -/
+
 
 example : P ↔ P ∧ True := by
-  sorry
-  done
+  constructor
+  · intro hP
+    exact ⟨hP, trivial⟩
+  · rintro ⟨hP, hT⟩
+    exact hP
 
 example : False ↔ P ∧ False := by
-  sorry
-  done
+  constructor
+  · intro hF
+    exfalso
+    exact hF
+  · rintro ⟨hP,hF⟩ /-I don't know why rintro here neither applies assumption afterwards
+                    nor let's me write 'rintro h ⟨hP,hF⟩' as before -/
+    exact hF
+    /-
+    intro h
+    cases' h with hP hF
+    exact hF
+-/
 
 example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) := by
-  sorry
-  done
+  rintro ⟨hPQ, hQP⟩ ⟨hRS,hSR⟩
+  constructor
+  · rintro ⟨hP, hR⟩
+    constructor
+    · apply hPQ
+      exact hP
+    · apply hRS
+      exact hR
+--or easier using 'rw' twice, since 'rw' uses 'rfl' afterwards
+example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) := by
+  intro h1 h2
+  rw [h1]
+  rw [h2]
 
 example : ¬(P ↔ ¬P) := by
-  sorry
-  done
+  intro h
+  cases' h with h1 h2
+  by_cases hP : P
+  · change P → (P → False) at h1
+    apply h1
+    exact hP
+    exact hP
+  · change P → False at hP
+    apply hP
+    apply h2
+    change ¬P at hP
+    apply hP
+/- In his solution he uses 'have' which I guess it is like stating a lemma
+and proving it inside the big proof, but I didn't want to use that.
+Maybe what I came up with is unelegant or something, but it returns 'no goals'-/
