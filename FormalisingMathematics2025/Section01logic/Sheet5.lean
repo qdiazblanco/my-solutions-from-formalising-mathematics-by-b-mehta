@@ -129,6 +129,15 @@ example : ¬(P ↔ ¬P) := by
     apply h2
     change ¬P at hP
     apply hP
+--or
+example : ¬(P ↔ ¬P) := by
+  intro h
+  cases' h with h1 h2
+  apply h1
+  <;> by_contra hnP
+  <;> apply h1
+  <;> apply h2
+  <;> exact hnP
 /- In his solution he uses 'have' which I guess it is like stating a lemma
 and proving it inside the big proof, but I didn't want to use that.
 Maybe what I came up with is unelegant or something, but it returns 'no goals'-/

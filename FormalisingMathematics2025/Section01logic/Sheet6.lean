@@ -33,43 +33,150 @@ example : P → P ∨ Q := by
   done
 
 example : Q → P ∨ Q := by
-  sorry
-  done
+  intro hQ
+  right
+  exact hQ
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
   intro hPoQ
   cases hPoQ with
-  | inl h => sorry
-  | inr h => sorry
-  done
+  | inl h =>
+    intro hPR hQR
+    apply hPR
+    exact h
+  | inr h =>
+    intro hPR hQR
+    apply hQR
+    exact h
 
 -- symmetry of `or`
 example : P ∨ Q → Q ∨ P := by
-  sorry
-  done
+  intro hPoQ
+  cases' hPoQ with hP hQ
+  · right
+    exact hP
+  · left
+    exact hQ
 
 -- associativity of `or`
 example : (P ∨ Q) ∨ R ↔ P ∨ Q ∨ R := by
-  sorry
-  done
+  constructor
+  <;> intro h
+  · cases' h with hPoQ hR
+    · cases' hPoQ with hP hQ
+      · left
+        exact hP
+      · right
+        left
+        exact hQ
+    · right
+      right
+      exact hR
+
+  · cases' h with hP hQoR
+    · left
+      left
+      exact hP
+    · cases' hQoR with hQ hR
+      ·left
+       right
+       exact hQ
+      · right
+        exact hR
+--I forogot about rintro, could have been shorter
+--But this way is more explicit
 
 example : (P → R) → (Q → S) → P ∨ Q → R ∨ S := by
-  sorry
-  done
+  intro hPR hQS hPoQ
+  cases' hPoQ with hP hQ
+  · left
+    apply hPR
+    exact hP
+  · right
+    apply hQS
+    exact hQ
 
 example : (P → Q) → P ∨ R → Q ∨ R := by
-  sorry
-  done
+  rintro hPQ (hP | hR)
+  · left
+    apply hPQ
+    exact hP
+  · right
+    exact hR
+
 
 example : (P ↔ R) → (Q ↔ S) → (P ∨ Q ↔ R ∨ S) := by
-  sorry
-  done
+  rintro ⟨hPR, hRP⟩ ⟨hQS, hSQ⟩
+  constructor
+  · rintro (hP | hQ)
+    · left
+      apply hPR
+      exact hP
+    · right
+      apply hQS
+      exact hQ
+
+  · rintro (hR | hS)
+    · left
+      apply hRP
+      exact hR
+    · right
+      apply hSQ
+      exact hS
+--or much better using 'rw'
+example : (P ↔ R) → (Q ↔ S) → (P ∨ Q ↔ R ∨ S) := by
+  intro hPR hQS
+  rw [hPR]
+  rw [hQS]
 
 -- de Morgan's laws
 example : ¬(P ∨ Q) ↔ ¬P ∧ ¬Q := by
-  sorry
-  done
+  constructor
+  · intro h1
+    --change P ∨ Q → False at h1
+    --change (P → False) ∧ (Q → False)
+    constructor
+    · intro hP
+      apply h1
+      left
+      exact hP
+    · intro hQ
+      apply h1
+      right
+      exact hQ
+
+  · intro h2 hPoQ
+    --change (P ∨ Q) → False
+    --change (P → False) ∧ (Q → False) at h2
+    --intro hPoQ
+    cases' h2 with hnP hnQ
+    cases' hPoQ with hP hQ
+    · apply hnP
+      exact hP
+    · apply hnQ
+      exact hQ
+
+
 
 example : ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
-  sorry
-  done
+  constructor
+  · intro h1
+    by_contra hc
+    apply h1
+    constructor
+    · by_contra hnP
+      apply hc
+      left
+      exact hnP
+    · by_contra hnQ
+      apply hc
+      right
+      exact hnQ
+
+  · intro h2 hPyQ
+    cases' hPyQ with hP hQ
+    cases' h2 with hnP hnQ
+    · apply hnP
+      exact hP
+    · apply hnQ
+      exact hQ
