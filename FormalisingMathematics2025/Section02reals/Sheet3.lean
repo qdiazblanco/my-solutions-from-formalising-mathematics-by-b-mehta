@@ -96,13 +96,10 @@ theorem tendsTo_const (c : ℝ) : TendsTo (fun n ↦ c) c := by
 /-- If `a(n)` tends to `t` then `a(n) + c` tends to `t + c` -/
 theorem tendsTo_add_const {a : ℕ → ℝ} {t : ℝ} (c : ℝ) (h : TendsTo a t) :
     TendsTo (fun n => a n + c) (t + c) := by
-  -- hints: make sure you know the maths proof!
-  -- use `cases` to deconstruct an `exists`
-  -- hypothesis, and `specialize` to specialize
-  -- a `forall` hypothesis to specific values.
-  -- Look up the explanations of these tactics in Part 2
-  -- of the course notes.  rw [tendsTo_def] at h ⊢
-  sorry
+    rw[tendsTo_def]
+    simp --it is better to use 'ring_nf' here, see use of non-terminal simp's.
+    rw[tendsTo_def] at h
+    exact h
 
 -- you're not quite ready for this one yet though.
 /-- If `a(n)` tends to `t` then `-a(n)` tends to `-t`.  -/
