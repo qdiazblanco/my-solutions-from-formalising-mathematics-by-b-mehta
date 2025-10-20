@@ -60,6 +60,32 @@ theorem tendsTo_add {a b : ℕ → ℝ} {t u : ℝ} (ha : TendsTo a t) (hb : Ten
   constructor <;>-- `<;>` means "do next tactic to all goals produced by this tactic"
     linarith
 
+--my try
+
+theorem tendsTo_add {a b : ℕ → ℝ} {t u : ℝ} (ha : TendsTo a t) (hb : TendsTo b u) :
+    TendsTo (fun n ↦ a n + b n) (t + u) := by
+  rw[tendsTo_def] at ha hb ⊢
+  intro ε hε
+  have hε2 : 0 < ε/2 := by
+    ·exact half_pos hε
+  specialize ha (ε/2) hε2
+  specialize hb (ε/2) hε2
+  cases' ha with N1 hN1
+  cases' hb with N2 hN2
+  use max N1 N2
+  intro n hn
+  specialize hN1 n (by
+    exact le_of_max_le_left hn)
+  specialize hN2 n (by
+    exact le_of_max_le_right hn )
+  have htr : |a n + b n - (t + u)| <= |a n - t| + |b n - u| := by
+    ring_nf
+    have h1 : |a n + b n + (-t - u)| = |(a n - t) + (b n - u)| := by
+      ring_nf
+    rw[h1]
+    exact abs_add_le (a n - t) (b n - u)
+  linarith
+
 /-- If `a(n)` tends to t and `b(n)` tends to `u` then `a(n) - b(n)`
 tends to `t - u`. -/
 theorem tendsTo_sub {a b : ℕ → ℝ} {t u : ℝ} (ha : TendsTo a t) (hb : TendsTo b u) :
